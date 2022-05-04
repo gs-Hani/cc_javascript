@@ -1,70 +1,73 @@
-// All valid credit card numbers
-const valid1 = [4, 5, 3, 9, 6, 7, 7, 9, 0, 8, 0, 1, 6, 8, 0, 8];
-const valid2 = [5, 5, 3, 5, 7, 6, 6, 7, 6, 8, 7, 5, 1, 4, 3, 9];
-const valid3 = [3, 7, 1, 6, 1, 2, 0, 1, 9, 9, 8, 5, 2, 3, 6];
-const valid4 = [6, 0, 1, 1, 1, 4, 4, 3, 4, 0, 6, 8, 2, 9, 0, 5];
-const valid5 = [4, 5, 3, 9, 4, 0, 4, 9, 6, 7, 8, 6, 9, 6, 6, 6];
-
-// All invalid credit card numbers
-const invalid1 = [4, 5, 3, 2, 7, 7, 8, 7, 7, 1, 0, 9, 1, 7, 9, 5];
-const invalid2 = [5, 7, 9, 5, 5, 9, 3, 3, 9, 2, 1, 3, 4, 6, 4, 3];
-const invalid3 = [3, 7, 5, 7, 9, 6, 0, 8, 4, 4, 5, 9, 9, 1, 4];
-const invalid4 = [6, 0, 1, 1, 1, 2, 7, 9, 6, 1, 7, 7, 7, 9, 3, 5];
-const invalid5 = [5, 3, 8, 2, 0, 1, 9, 7, 7, 2, 8, 8, 3, 8, 5, 4];
-
-// Can be either valid or invalid
-const mystery1 = [3, 4, 4, 8, 0, 1, 9, 6, 8, 3, 0, 5, 4, 1, 4];
-const mystery2 = [5, 4, 6, 6, 1, 0, 0, 8, 6, 1, 6, 2, 0, 2, 3, 9];
-const mystery3 = [6, 0, 1, 1, 3, 7, 7, 0, 2, 0, 9, 6, 2, 6, 5, 6, 2, 0, 3];
-const mystery4 = [4, 9, 2, 9, 8, 7, 7, 1, 6, 9, 2, 1, 7, 0, 9, 3];
-const mystery5 = [4, 9, 1, 3, 5, 4, 0, 4, 6, 3, 0, 7, 2, 5, 2, 3];
-
-// An array of all the arrays above
-const batch = [valid1, valid2, valid3, valid4, valid5, invalid1, invalid2, invalid3, invalid4, invalid5, mystery1, mystery2, mystery3, mystery4, mystery5];
-
-
-// Add your functions below:
-const validateCred = (arr) => {
-  let rArr = arr.slice().reverse();
-  let dArr = []
-  dArr = rArr.map(function(x) {if (x*2 > 9){
-                  return (x*2)-9} else {return x*2}});
-  let sum  = 0;
-  for (let i = 0; i < rArr.length; i = i+2){sum += rArr[i];}
-
-  let sum1 = 0;
-  for (let i = 1; i < dArr.length; i = i+2){sum1 += dArr[i];}
-
-  let sumT = sum + sum1;
-  /*console.log(sum);
-  console.log(sum1);
-  console.log(sumT);
-  console.log(arr);
-  console.log(rArr);
-  console.log(dArr);*/
-  if (sumT % 10 === 0) {return true} else {return false};
-};
-
-const findInvalidCards = (nestedArray) => {
-  let invalidCreditCards = [];
-  invalidCreditCards = nestedArray.filter
-  (x => validateCred(x) === false);
-  return invalidCreditCards;
-};
-let faultyCards = [];
-
-const idInvalidCardCompanies = (nestedArray1) =>{
-    let companies = [];
-    for (let i = 0; i < nestedArray1.length; i++){
-      if (nestedArray1[i][0]=== 3){companies.push('Amex (American Express)');}
-      else if (nestedArray1[i][0]=== 4){companies.push('Visa');}
-      else if (nestedArray1[i][0]=== 5){companies.push('Mastercard');}
-      else if (nestedArray1[i][0]=== 6){companies.push('Discover');}
-      else {companies.push('Company not found');}
-    }
-    return companies.filter((item, index) => companies.indexOf(item) === index);
+// Returns a random DNA base
+const returnRandBase = () => {
+    const dnaBases = ['A', 'T', 'C', 'G']
+    return dnaBases[Math.floor(Math.random() * 4)] 
   }
-
-console.log(validateCred(mystery1));
-console.log(findInvalidCards(batch));
-console.log(idInvalidCardCompanies(findInvalidCards(batch)));
+  
+  // Returns a random single stand of DNA containing 15 bases
+  const mockUpStrand = () => {
+    const newStrand = []
+    for (let i = 0; i < 15; i++) {
+      newStrand.push(returnRandBase())
+    }
+    return newStrand
+  }
+  
+  const pAequorFactory = (uNumber,dnaArray) => {
+    return {
+      specimenNum: uNumber,
+      dna:dnaArray,
+      
+      mutate() {
+        const randIndex = Math.floor(Math.random() * this.dna.length);
+        let newBase = returnRandBase();
+        while (this.dna[randIndex] === newBase) {
+          newBase = returnRandBase();
+        }
+        this.dna[randIndex] = newBase;
+        return this.dna;
+      },//mutate
+  
+      compareDNA(pAequor){
+        let similarBases = 0;
+        for (let i = 0 ;i < dnaArray.length ;i++){
+          if (pAequor.dna[i] === this.dna[i]){similarBases++}
+        }
+        let similarityRatio = ((similarBases/this.dna.length) *100);
+        console.log(`specimen ${this.specimenNum} and specimen ${pAequor.specimenNum} have ${(similarityRatio).toFixed(2)}% DNA in common`)
+      },//compareDNA
+  
+      willLikelySurvive() {
+        const cOrG = this.dna.filter(el => el === "C" || el === "G");
+        return cOrG.length / this.dna.length >= 0.6;
+      },//willLikelySurvive
+      } //return
+    } //pAequorFactory
+  
+  let samples = []
+  let i = 1
+  while (samples.length < 30) {
+    let newOrg = pAequorFactory(i, mockUpStrand());
+    if (newOrg.willLikelySurvive()) {
+        samples.push(`specimenNum:${newOrg.specimenNum} dna:${newOrg.dna}`);
+    }
+    i++;
+  }
+  console.log(samples);
+  /*TEST1*/
+  //console.log(pAequorFactory(1,[ 'C', 'A', 'C', 'T', 'G', 'A', 'A', 'G', 'A', 'A', 'T', 'T', 'G', 'T', 'A' ]));
+  
+  /*TEST2*/
+  //console.log(pAequorFactory(1,[ 'C', 'A', 'C', 'T', 'G', 'A', 'A', 'G', 'A', 'A', 'T', 'T', 'G', 'T', 'A' ]).mutate());
+  
+  /*TEST3*/
+  /*const pAequor = {
+    specimenNum: 2,
+      dna:[ 'C', 'A', 'C', 'T', 'G', 'A', 'A', 'G', 'A', 'A', 'T', 'T', 'G', 'T', 'A' ],
+  }
+   console.log(pAequorFactory(1,mockUpStrand()).compareDNA(pAequor));*/
+  //.compareDNA(pAequorFactory(2,mockUpStrand())
+  
+  /*TEST4*/
+  //console.log(pAequorFactory(1,mockUpStrand()).willLikelySurvive());
+  
